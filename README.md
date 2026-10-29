@@ -1,52 +1,66 @@
-# Tic-Tac-Toe Game 🎮
-=====================
+# 🎮 Tic-Tac-Toe Arcade Deluxe
 
-A simple Tic-Tac-Toe game built with HTML, CSS, and JavaScript 💻.
+An electrifying, feature-rich modern overhaul of the classic Tic-Tac-Toe game built with vanilla HTML5, CSS3, and modern JavaScript. Packed with dynamic game modes, offline Web Audio synthesis, particle celebrations, animated SVG strike lines, customizable battle marks, and an unbeatable Minimax AI.
 
-## Features 🎉
+---
 
-* Play as X or O 🤖
-* Play against another player or against the AI (easy or difficult difficulty) 🤔
-* Keep track of scores and draws 📊
-* Modal window to display final scores and winner 🏆
+## 🌟 Key Features
 
-## How to Play 🎮
+### 🕹️ 3 Thrilling Game Modes
+1. **🎯 Classic Mode:** The timeless 3x3 grid battle.
+2. **👻 Ghost / Infinity Mode (No Draws!):** Each player can maintain at most **3 marks** on the board. When you place a 4th mark, your oldest mark vanishes! Pulsing visual cues warn you before your oldest piece disappears.
+3. **⏱️ Blitz Mode:** High-speed 5-second countdown timer per turn with audio ticking and automated move triggers when time runs out.
 
-1. Open the game in a web browser 📄
-2. Enter player names (optional) 📝
-3. Choose difficulty level (easy or difficult) 🤔
-4. Start the game 🎉
-5. Make moves by clicking on the game board 📈
-6. The game will automatically switch turns and update the scoreboard 🔄
-7. When the game is over, a modal window will display the final scores and winner 🏆
+### 🤖 Smart & Unbeatable AI
+* **🟢 Chill (Easy):** Casual, randomized play for beginners.
+* **🟡 Smart (Medium):** Strategically takes winning moves, blocks opponent paths, and prioritizes the center and corners.
+* **🔴 Unbeatable (Impossible):** Implemented with the mathematical **Minimax algorithm** — scientifically impossible to defeat in classic mode!
 
-## Technologies Used 💻
+### 🎨 Customizable Avatars & Battle Packs
+Choose your duel style:
+* ✖️ vs ⭕ — Classic Neon
+* 🚀 vs 👾 — Space Invaders
+* 🔥 vs ❄️ — Fire vs Ice
+* 🐱 vs 🐶 — Pet Rivalry
+* 👑 vs 💀 — Royals vs Reaper
 
-* HTML5 📄
-* CSS3 💄
-* JavaScript (ES6+) 💻
-* Font: Poppins (from Google Fonts) 📝
+### 🌌 Multiple Themes & Responsive UI
+* **🌌 Neon Glow (Cyberpunk default):** Deep slate background with glowing cyan and magenta accents.
+* **🌸 Pastel Pop:** Clean, modern bright theme with soft indigo and pink tones.
+* **🕶️ Midnight Dark:** GitHub-inspired dark mode.
 
-## Contribution Guidelines 🤝
+### 🔊 100% Offline Web Audio & Game Juice
+* Synthesized sound effects generated live using the **Web Audio API** (placement pops, vanishing whoosh, victory fanfare, draw buzz, blitz warnings) with zero external asset dependencies or audio lag.
+* Mute / Unmute audio toggle with `localStorage` memory.
+* Canvas-powered celebratory **Confetti cannon** physics on match wins.
+* **Animated SVG strike-through line** dynamically drawn across winning cells.
 
-If you'd like to contribute to this project, please follow these guidelines:
+---
 
-* Fork the repository and create a new branch for your changes
-* Make your changes and commit them with a descriptive message
-* Create a pull request and wait for review and approval
+## 🚀 How to Play
 
-## Author 👨‍💻
+1. Clone or download this repository:
+   ```bash
+   git clone https://github.com/AliGohar2151/PRODIGY_WD_03.git
+   ```
+2. Open [`index.html`](index.html) in any modern web browser.
+3. Select your desired game mode, opponent (vs AI or 2-Player Local), difficulty, and battle marks.
+4. Hit **START BATTLE ⚔️** and enjoy!
 
-[Ali Gohar]
+---
 
-## Date 📆
+## 🛠️ Technologies Used
 
-Monday, July 22, 2024
+* **HTML5:** Semantic markup, accessible dialogs, and SVG rendering.
+* **CSS3:** Custom properties (CSS variables), Grid & Flexbox, glassmorphic backdrop filters, and keyframe animations.
+* **JavaScript (ES6+):** Object-oriented game loop, Web Audio API synthesis, Canvas particle engine, and Minimax decision tree.
 
-## Issues and Feedback 🚨
+---
 
-If you encounter any issues or have feedback, please open an issue on this repository or contact me directly.
+## 👤 Author
 
-## Contributers 👥
+* **Ali Gohar** — [GitHub Profile](https://github.com/AliGohar2151)
 
-* [Ali Gohar] (initial developer)
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).

@@ -1,63 +1,282 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="neon">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe</title>
+    <title>Tic-Tac-Toe Arcade Deluxe 🎮</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <h1>Tic-Tac-Toe</h1>
+    <!-- Background Canvas for Celebratory Confetti -->
+    <canvas id="confettiCanvas"></canvas>
 
-    <div class="game-container">
-        <div id="setup" class="setup">
-            <h2>Setup Game</h2>
-            <input type="text" id="player1Name" placeholder="Player 1 Name">
-            <input type="text" id="player2Name" placeholder="Player 2 Name (Leave blank for AI)">
-            <div class="difficulty-selection">
-                <label>
-                    <input type="radio" name="difficulty" value="easy" checked> Easy
-                </label>
-                <label>
-                    <input type="radio" name="difficulty" value="difficult"> Difficult
-                </label>
+    <div class="app-wrapper">
+        <!-- Top Navigation / Controls Bar -->
+        <header class="header">
+            <div class="logo-area">
+                <span class="arcade-badge">ARCADE EDITION</span>
+                <h1>TIC-TAC-TOE <span>DELUXE</span></h1>
             </div>
-            <button id="startButton">Start Game</button>
-        </div>
-        <div id="game" class="game" style="display: none;">
-            <h1 id="gameStatus">Player 1's turn</h1>
-            <p id="gameDifficulty" style="display: none;">Difficulty: Easy</p>
-            <div class="scoreboard">
-                <p id="player1Score">Player 1: 0</p>
-                <p id="player2Score">Player 2: 0</p>
-                <p id="drawCount">Draws: 0</p>
+            <div class="quick-controls">
+                <!-- Theme Switcher -->
+                <div class="theme-select-wrapper">
+                    <label for="themeSelect" class="visually-hidden">Theme</label>
+                    <select id="themeSelect" class="control-btn select-btn" title="Change Theme">
+                        <option value="neon">🌌 Neon Glow</option>
+                        <option value="pastel">🌸 Pastel Pop</option>
+                        <option value="dark">🕶️ Midnight</option>
+                    </select>
+                </div>
+                <!-- Sound Toggle -->
+                <button id="soundToggle" class="control-btn icon-btn" title="Toggle Sound">
+                    <span id="soundIcon">🔊</span>
+                </button>
+                <!-- Help / Rules Modal Button -->
+                <button id="helpButton" class="control-btn icon-btn" title="Game Rules & Modes">
+                    <span>❓</span>
+                </button>
             </div>
-            <div class="board">
-                <div class="cell" data-cell></div>
-                <div class="cell" data-cell></div>
-                <div class="cell" data-cell></div>
-                <div class="cell" data-cell></div>
-                <div class="cell" data-cell></div>
-                <div class="cell" data-cell></div>
-                <div class="cell" data-cell></div>
-                <div class="cell" data-cell></div>
-                <div class="cell" data-cell></div>
+        </header>
+
+        <!-- Main Card Container -->
+        <main class="main-card">
+
+            <!-- SCREEN 1: Setup / Menu -->
+            <section id="setupScreen" class="screen setup-screen">
+                <h2 class="section-title">Battle Setup</h2>
+
+                <!-- Game Mode Picker -->
+                <div class="setting-group">
+                    <label class="group-label">Choose Game Mode</label>
+                    <div class="mode-cards" id="modeSelector">
+                        <button type="button" class="mode-card active" data-mode="classic">
+                            <span class="mode-icon">🎯</span>
+                            <span class="mode-name">Classic</span>
+                            <span class="mode-desc">Standard 3x3 match</span>
+                        </button>
+                        <button type="button" class="mode-card" data-mode="ghost">
+                            <span class="mode-icon">👻</span>
+                            <span class="mode-name">Ghost Mode</span>
+                            <span class="mode-desc">Only 3 marks active! 4th makes 1st vanish</span>
+                        </button>
+                        <button type="button" class="mode-card" data-mode="blitz">
+                            <span class="mode-icon">⏱️</span>
+                            <span class="mode-name">Blitz Speed</span>
+                            <span class="mode-desc">5-second quick turns</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Opponent Selection -->
+                <div class="setting-group">
+                    <label class="group-label">Opponent</label>
+                    <div class="opponent-tabs">
+                        <button type="button" id="tabAi" class="pill-btn active">🤖 vs AI</button>
+                        <button type="button" id="tabPvp" class="pill-btn">👥 2 Players (Local)</button>
+                    </div>
+                </div>
+
+                <!-- AI Difficulty Options (visible only if vs AI) -->
+                <div class="setting-group" id="aiDifficultyGroup">
+                    <label class="group-label">AI Difficulty</label>
+                    <div class="difficulty-pills">
+                        <label class="pill-radio">
+                            <input type="radio" name="aiDifficulty" value="easy">
+                            <span class="pill-label">🟢 Chill</span>
+                        </label>
+                        <label class="pill-radio">
+                            <input type="radio" name="aiDifficulty" value="medium" checked>
+                            <span class="pill-label">🟡 Smart</span>
+                        </label>
+                        <label class="pill-radio">
+                            <input type="radio" name="aiDifficulty" value="impossible">
+                            <span class="pill-label">🔴 Unbeatable</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Avatar / Mark Pack Selection -->
+                <div class="setting-group">
+                    <label class="group-label">Battle Marks</label>
+                    <div class="mark-packs" id="markPackSelector">
+                        <button type="button" class="mark-pack-btn active" data-p1="✖️" data-p2="⭕" data-p1name="X" data-p2name="O">
+                            <span>✖️ vs ⭕</span>
+                        </button>
+                        <button type="button" class="mark-pack-btn" data-p1="🚀" data-p2="👾" data-p1name="Rocket" data-p2name="Alien">
+                            <span>🚀 vs 👾</span>
+                        </button>
+                        <button type="button" class="mark-pack-btn" data-p1="🔥" data-p2="❄️" data-p1name="Flame" data-p2name="Frost">
+                            <span>🔥 vs ❄️</span>
+                        </button>
+                        <button type="button" class="mark-pack-btn" data-p1="🐱" data-p2="🐶" data-p1name="Cat" data-p2name="Dog">
+                            <span>🐱 vs 🐶</span>
+                        </button>
+                        <button type="button" class="mark-pack-btn" data-p1="👑" data-p2="💀" data-p1name="King" data-p2name="Reaper">
+                            <span>👑 vs 💀</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Player Names -->
+                <div class="setting-group player-inputs">
+                    <div class="input-field">
+                        <label for="player1Input">Player 1</label>
+                        <input type="text" id="player1Input" placeholder="Player 1" value="Player 1" maxlength="15">
+                    </div>
+                    <div class="input-field">
+                        <label for="player2Input" id="player2Label">Player 2 (AI)</label>
+                        <input type="text" id="player2Input" placeholder="AI Bot" value="AI Bot" maxlength="15">
+                    </div>
+                </div>
+
+                <!-- Start Action -->
+                <button id="startGameBtn" class="cta-btn primary-btn pulse-anim">
+                    START BATTLE ⚔️
+                </button>
+            </section>
+
+            <!-- SCREEN 2: Active Gameplay -->
+            <section id="gameScreen" class="screen game-screen" style="display: none;">
+                
+                <!-- Game Info & Turn Header -->
+                <div class="turn-banner" id="turnBanner">
+                    <span class="turn-mark" id="currentTurnMark">✖️</span>
+                    <span class="turn-text" id="turnStatusText">Player 1's Turn</span>
+                </div>
+
+                <!-- Blitz Timer Bar (visible during Blitz mode) -->
+                <div class="blitz-timer-container" id="blitzTimerContainer" style="display: none;">
+                    <div class="blitz-timer-bar" id="blitzTimerBar"></div>
+                    <span class="blitz-timer-text" id="blitzTimerText">5.0s</span>
+                </div>
+
+                <!-- Scoreboard -->
+                <div class="scoreboard">
+                    <div class="score-card player-1" id="p1ScoreCard">
+                        <span class="score-mark" id="p1ScoreMark">✖️</span>
+                        <div class="score-info">
+                            <span class="player-name" id="p1DisplayName">Player 1</span>
+                            <span class="score-number" id="p1ScoreNumber">0</span>
+                        </div>
+                    </div>
+
+                    <div class="score-card score-draws">
+                        <span class="draws-label">DRAWS</span>
+                        <span class="score-number" id="drawsScoreNumber">0</span>
+                    </div>
+
+                    <div class="score-card player-2" id="p2ScoreCard">
+                        <span class="score-mark" id="p2ScoreMark">⭕</span>
+                        <div class="score-info">
+                            <span class="player-name" id="p2DisplayName">AI Bot</span>
+                            <span class="score-number" id="p2ScoreNumber">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ghost Mode Hint/Status -->
+                <div id="ghostModeIndicator" class="ghost-indicator" style="display: none;">
+                    👻 Ghost Mode: Marks vanish after 3 moves! Oldest marks fade out.
+                </div>
+
+                <!-- Board Wrapper -->
+                <div class="board-wrapper">
+                    <!-- Winning Strike Line Overlay -->
+                    <svg id="winningStrikeSvg" class="winning-strike-svg" aria-hidden="true">
+                        <line id="strikeLine" x1="0" y1="0" x2="0" y2="0" />
+                    </svg>
+
+                    <!-- 3x3 Grid Board -->
+                    <div class="board" id="board">
+                        <button class="cell" data-index="0" aria-label="Cell 1"></button>
+                        <button class="cell" data-index="1" aria-label="Cell 2"></button>
+                        <button class="cell" data-index="2" aria-label="Cell 3"></button>
+                        <button class="cell" data-index="3" aria-label="Cell 4"></button>
+                        <button class="cell" data-index="4" aria-label="Cell 5"></button>
+                        <button class="cell" data-index="5" aria-label="Cell 6"></button>
+                        <button class="cell" data-index="6" aria-label="Cell 7"></button>
+                        <button class="cell" data-index="7" aria-label="Cell 8"></button>
+                        <button class="cell" data-index="8" aria-label="Cell 9"></button>
+                    </div>
+                </div>
+
+                <!-- In-Game Action Buttons -->
+                <div class="game-actions">
+                    <button id="restartRoundBtn" class="action-btn" title="Restart this round">
+                        🔄 Restart Round
+                    </button>
+                    <button id="backToSetupBtn" class="action-btn secondary" title="Change settings or mode">
+                        ⚙️ Setup & Modes
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL 1: Game Over / Victory Modal -->
+    <div id="winnerModal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span class="modal-trophy" id="modalTrophy">🏆</span>
+                <h3 id="modalWinnerTitle">Victory!</h3>
             </div>
-            <button id="restartButton">Restart Game</button>
-            <button id="setupButton">Setup Game</button>
-            <button id="endButton">End Game</button>
+            <p id="modalWinnerMessage" class="modal-message">Player 1 took the victory!</p>
+            
+            <div class="modal-stats" id="modalStats">
+                <div class="stat-item">
+                    <span class="stat-label">P1 Wins</span>
+                    <span class="stat-val" id="modalP1Wins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Draws</span>
+                    <span class="stat-val" id="modalDraws">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">P2 Wins</span>
+                    <span class="stat-val" id="modalP2Wins">0</span>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button id="modalPlayAgainBtn" class="cta-btn primary-btn">Play Next Round ⚔️</button>
+                <button id="modalChangeModeBtn" class="cta-btn secondary-btn">Change Settings ⚙️</button>
+            </div>
         </div>
     </div>
-    <!-- Modal -->
-    <div id="scoreModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p id="finalScoreMessage"></p>
+
+    <!-- MODAL 2: Rules & Game Info Modal -->
+    <div id="rulesModal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card rules-card">
+            <div class="modal-header">
+                <span class="modal-trophy">📜</span>
+                <h3>Game Modes & Rules</h3>
+                <button id="closeRulesBtn" class="close-btn" aria-label="Close Rules">&times;</button>
+            </div>
+            <div class="rules-body">
+                <div class="rule-block">
+                    <h4>🎯 Classic Mode</h4>
+                    <p>The timeless 3x3 game. Get 3 of your marks in a horizontal, vertical, or diagonal line to win.</p>
+                </div>
+                <div class="rule-block">
+                    <h4>👻 Ghost Mode (Infinity)</h4>
+                    <p>No more boring draws! Each player can only have <strong>3 marks</strong> on the board simultaneously. When you place a 4th mark, your <strong>1st (oldest) mark disappears</strong>! Watch for the pulsating warning mark before it vanishes.</p>
+                </div>
+                <div class="rule-block">
+                    <h4>⏱️ Blitz Mode</h4>
+                    <p>You have only <strong>5 seconds per turn</strong>! Make a quick move before the timer expires or a random square is chosen for you.</p>
+                </div>
+                <div class="rule-block">
+                    <h4>🔴 Unbeatable AI</h4>
+                    <p>Uses the mathematical <em>Minimax algorithm</em>. Can you outsmart it? (Hint: impossible in Classic mode, but maybe in Ghost or Blitz!)</p>
+                </div>
+            </div>
+            <button id="gotItRulesBtn" class="cta-btn primary-btn">Got It, Let's Play!</button>
         </div>
     </div>
 
+    <!-- Game Scripts -->
     <script src="script.js"></script>
 </body>
 
