@@ -13,43 +13,28 @@ Chrono-Tic-Tac-Toe tackles the fatal flaw of traditional Tic-Tac-Toe—repetitiv
 
 ---
 
-## 📸 Game Gallery & Interface Screenshots
-
-| 🎮 Battle Setup & Mode Selection | ⚡ Tactical Overdrive Gameplay |
-| :---: | :---: |
-| ![Battle Setup Screen](docs/screenshots/setup-menu.png) | ![Tactical Overdrive Arena](docs/screenshots/gameplay-tactical.png) |
-| *Custom game modes, AI difficulties, themes, and battle marks* | *Active match with Shatter, Phase Swap, and Blitz countdown* |
-
-| 🏆 Victory Celebration & Laser Line | 📱 Responsive Mobile Layout |
-| :---: | :---: |
-| ![Victory Celebration](docs/screenshots/victory-screen.png) | ![Mobile Responsive Layout](docs/screenshots/mobile-view.png) |
-| *Victory pause, winning pawn pulse, laser line, and stats modal* | *Fluid responsive scaling for mobile touch devices* |
-
----
-
 ## 📑 Table of Contents
 
 1. [Overview & Quick Start](#-overview--quick-start)
-2. [Game Gallery & Screenshots](#-game-gallery--interface-screenshots)
-3. [5-Layer Decoupled Architecture](#-5-layer-decoupled-architecture)
-4. [Innovative Gameplay Mechanics](#-innovative-gameplay-mechanics)
+2. [5-Layer Decoupled Architecture](#-5-layer-decoupled-architecture)
+3. [Innovative Gameplay Mechanics](#-innovative-gameplay-mechanics)
    - [Chrono Ghost Mode (FIFO Decay)](#1-chrono-ghost-mode-fifo-mark-decay)
    - [Tactical Overdrive Mode](#2-tactical-overdrive-mode)
    - [Pawn Destroy & Swap Visual Effects](#3-pawn-destroy--swap-visual-effects)
    - [Blitz Speed Timer & Victory Pause](#4-blitz-speed-timer--victory-pause)
-5. [AI Game Theory & Mathematical Optimality](#-ai-game-theory--mathematical-optimality)
+4. [AI Game Theory & Mathematical Optimality](#-ai-game-theory--mathematical-optimality)
    - [Classic Minimax with Alpha-Beta Pruning](#1-classic-minimax-depth-9-alpha-beta-pruning)
    - [Chrono Ghost Transposition Minimax with Cycle Detection](#2-chrono-ghost-transposition-minimax--cycle-prevention)
    - [Tactical Heuristic & Exploratory Tiers](#3-tactical-heuristic--exploratory-tiers)
-6. [Procedural Web Audio Graph](#-procedural-web-audio-graph)
-7. [Indie Visual Design & UI System](#-indie-visual-design--ui-system)
+5. [Procedural Web Audio Graph](#-procedural-web-audio-graph)
+6. [Indie Visual Design & UI System](#-indie-visual-design--ui-system)
    - [Handcrafted Color Schemes](#handcrafted-color-palettes)
    - [Desktop Cockpit Console](#responsive-desktop-cockpit-console)
    - [Canvas Particle Physics Engine](#canvas-particle-physics-confetti)
    - [Dynamic SVG Laser Strike Line](#dynamic-svg-laser-strike-line)
-8. [Accessibility & WCAG 2.1 AA Compliance](#-accessibility--wcag-21-aa-compliance)
-9. [Automated Test Suite & Verification Guide](#-automated-test-suite--verification-guide)
-10. [Project Layout & Engineering Invariants](#-project-layout--engineering-invariants)
+7. [Accessibility & WCAG 2.1 AA Compliance](#-accessibility--wcag-21-aa-compliance)
+8. [Automated Test Suite & Verification Guide](#-automated-test-suite--verification-guide)
+9. [Project Layout & Engineering Invariants](#-project-layout--engineering-invariants)
 
 ---
 
