@@ -64,7 +64,12 @@ Chrono-Tic-Tac-Toe is engineered as a standalone static web application that run
 git clone https://github.com/AliGohar2151/tic-tac-toe-arcade-deluxe.git
 cd tic-tac-toe-arcade-deluxe
 
-# 2. Open directly in your default browser
+# 2. Run with built-in zero-dependency local server
+npm start
+# or: node server.js
+# Then open http://localhost:8899 in your browser
+
+# Alternatively, open index.html directly:
 # Windows PowerShell:
 Start-Process index.html
 
