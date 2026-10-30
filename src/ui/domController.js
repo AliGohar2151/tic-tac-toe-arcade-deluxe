@@ -55,6 +55,12 @@ export class DomController {
     // null | { ability: 'shatter', player: 'p1'|'p2' } | { ability: 'swap', step: 1|2, player: 'p1'|'p2', sourceIndex: number|null }
     this.targetingState = null;
 
+    // Game Over presentation delay (gives players time to see final move & winning laser line)
+    this.gameOverModalDelay = options.gameOverModalDelay !== undefined
+      ? options.gameOverModalDelay
+      : (typeof window !== 'undefined' ? 1400 : 0);
+    this._gameOverModalTimeout = null;
+
     this._unsubscribers = [];
     this._domCleanups = [];
 
@@ -424,6 +430,10 @@ export class DomController {
 
   _showSetupScreen() {
     const el = this.elements;
+    if (this._gameOverModalTimeout) {
+      clearTimeout(this._gameOverModalTimeout);
+      this._gameOverModalTimeout = null;
+    }
     if (this.gameController && typeof this.gameController.pause === 'function') {
       this.gameController.pause();
     }
@@ -439,6 +449,10 @@ export class DomController {
   // ---------------------------------------------------------------------------
 
   _handleRoundStarted(payload) {
+    if (this._gameOverModalTimeout) {
+      clearTimeout(this._gameOverModalTimeout);
+      this._gameOverModalTimeout = null;
+    }
     this._clearTargetingState();
     this._resetBoardDom();
     this._clearLaserLine();
@@ -543,11 +557,20 @@ export class DomController {
     const cell = cellsList[evictedIndex];
 
     if (cell) {
+      const mark = cell.textContent || (player === PLAYERS.P1 ? this.p1Mark : this.p2Mark);
+      if (typeof cell.setAttribute === 'function') {
+        cell.setAttribute('data-vanished-mark', mark);
+      }
       cell.textContent = '';
       if (cell.classList) {
         cell.classList.remove('cell-p1', 'cell-p2', 'marked', 'mark-age-1', 'mark-age-2', 'mark-age-3', 'is-expiring-next', 'ghost-critical-pulse');
         cell.classList.add('ghost-fade-out');
-        setTimeout(() => cell.classList.remove('ghost-fade-out'), 500);
+        setTimeout(() => {
+          cell.classList.remove('ghost-fade-out');
+          if (typeof cell.removeAttribute === 'function') {
+            cell.removeAttribute('data-vanished-mark');
+          }
+        }, 520);
       }
     }
 
@@ -576,11 +599,20 @@ export class DomController {
     if (ability === 'shatter' && targetIndex !== undefined) {
       const cell = cellsList[targetIndex];
       if (cell) {
+        const mark = cell.textContent || (player === PLAYERS.P1 ? this.p2Mark : this.p1Mark);
+        if (typeof cell.setAttribute === 'function') {
+          cell.setAttribute('data-destroyed-mark', mark);
+        }
         cell.textContent = '';
         if (cell.classList) {
           cell.classList.remove('cell-p1', 'cell-p2', 'marked', 'mark-age-1', 'mark-age-2', 'mark-age-3', 'is-expiring-next');
           cell.classList.add('cell-shattered');
-          setTimeout(() => cell.classList.remove('cell-shattered'), 500);
+          setTimeout(() => {
+            cell.classList.remove('cell-shattered');
+            if (typeof cell.removeAttribute === 'function') {
+              cell.removeAttribute('data-destroyed-mark');
+            }
+          }, 550);
         }
       }
       const r = Math.floor(targetIndex / 3) + 1;
@@ -593,6 +625,24 @@ export class DomController {
       if (cellA && cellB) {
         const textA = cellA.textContent;
         const textB = cellB.textContent;
+
+        // Calculate translation delta for arc-flight animation if in browser DOM
+        if (typeof cellA.getBoundingClientRect === 'function' && typeof cellB.getBoundingClientRect === 'function') {
+          try {
+            const rectA = cellA.getBoundingClientRect();
+            const rectB = cellB.getBoundingClientRect();
+            const deltaX = (rectB.left || 0) - (rectA.left || 0);
+            const deltaY = (rectB.top || 0) - (rectA.top || 0);
+
+            if (cellA.style && cellB.style && typeof cellA.style.setProperty === 'function') {
+              cellA.style.setProperty('--swap-dx', `${deltaX}px`);
+              cellA.style.setProperty('--swap-dy', `${deltaY}px`);
+              cellB.style.setProperty('--swap-dx', `${-deltaX}px`);
+              cellB.style.setProperty('--swap-dy', `${-deltaY}px`);
+            }
+          } catch (_) {}
+        }
+
         cellA.textContent = textB;
         cellB.textContent = textA;
 
@@ -602,12 +652,18 @@ export class DomController {
           cellA.classList.toggle('cell-p2', isA1);
           cellB.classList.toggle('cell-p1', isA1);
           cellB.classList.toggle('cell-p2', !isA1);
-          cellA.classList.add('cell-swapped');
-          cellB.classList.add('cell-swapped');
+          cellA.classList.add('cell-swapped', 'swap-anim-a');
+          cellB.classList.add('cell-swapped', 'swap-anim-b');
           setTimeout(() => {
-            cellA.classList.remove('cell-swapped');
-            cellB.classList.remove('cell-swapped');
-          }, 400);
+            cellA.classList.remove('cell-swapped', 'swap-anim-a');
+            cellB.classList.remove('cell-swapped', 'swap-anim-b');
+            if (cellA.style && cellB.style && typeof cellA.style.removeProperty === 'function') {
+              cellA.style.removeProperty('--swap-dx');
+              cellA.style.removeProperty('--swap-dy');
+              cellB.style.removeProperty('--swap-dx');
+              cellB.style.removeProperty('--swap-dy');
+            }
+          }, 500);
         }
       }
       const r1 = Math.floor(indexA / 3) + 1;
@@ -720,8 +776,19 @@ export class DomController {
       }
 
       const winnerName = winner === PLAYERS.P1 ? this.p1Name : this.p2Name;
-      this._openWinnerModal(`${winnerName} Wins!`, `${winnerName} achieved 3-in-a-row!`, '🏆');
       this._addHistoryEntry(`🏆 Game Over: ${winnerName} won!`);
+
+      // Add a noticeable pause so the player can see where the computer (or player) placed
+      // its final pawn, watch the winning combination bounce, and see the laser strike
+      const delay = this.gameOverModalDelay;
+      if (delay > 0) {
+        this._gameOverModalTimeout = setTimeout(() => {
+          this._openWinnerModal(`${winnerName} Wins!`, `${winnerName} achieved 3-in-a-row!`, '🏆');
+          this._gameOverModalTimeout = null;
+        }, delay);
+      } else {
+        this._openWinnerModal(`${winnerName} Wins!`, `${winnerName} achieved 3-in-a-row!`, '🏆');
+      }
 
     } else {
       // Stalemate / Draw
@@ -734,8 +801,17 @@ export class DomController {
         this.soundEngine.playDraw();
       }
 
-      this._openWinnerModal('Stalemate!', 'The board is locked with no winner.', '🤝');
       this._addHistoryEntry('🤝 Game Over: Draw / Stalemate');
+
+      const delay = this.gameOverModalDelay;
+      if (delay > 0) {
+        this._gameOverModalTimeout = setTimeout(() => {
+          this._openWinnerModal('Stalemate!', 'The board is locked with no winner.', '🤝');
+          this._gameOverModalTimeout = null;
+        }, delay);
+      } else {
+        this._openWinnerModal('Stalemate!', 'The board is locked with no winner.', '🤝');
+      }
     }
 
     if (this.a11yManager) {

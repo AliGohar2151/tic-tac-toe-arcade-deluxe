@@ -923,6 +923,8 @@ describe('Chrono-Tic-Tac-Toe: Headless UI & Accessibility Master Test Suite', ()
       const state = app.gameController.getState();
       assert.equal(state.board[4], null);
       assert.equal(cells[4].textContent, '');
+      assert.equal(cells[4].classList.contains('cell-shattered'), true);
+      assert.equal(cells[4].getAttribute('data-destroyed-mark'), '⭕');
       assert.equal(app.domController.targetingState, null);
       assert.ok(soundEngine.calls.includes('playAbility:shatter'));
     });
@@ -963,6 +965,10 @@ describe('Chrono-Tic-Tac-Toe: Headless UI & Accessibility Master Test Suite', ()
       const state = app.gameController.getState();
       assert.equal(state.board[0], 'p2');
       assert.equal(state.board[1], 'p1');
+      assert.equal(cells[0].classList.contains('cell-swapped'), true);
+      assert.equal(cells[0].classList.contains('swap-anim-a'), true);
+      assert.equal(cells[1].classList.contains('cell-swapped'), true);
+      assert.equal(cells[1].classList.contains('swap-anim-b'), true);
       assert.equal(app.domController.targetingState, null);
       assert.ok(soundEngine.calls.includes('playAbility:swap'));
 
@@ -1055,6 +1061,34 @@ describe('Chrono-Tic-Tac-Toe: Headless UI & Accessibility Master Test Suite', ()
       assert.ok(soundEngine.calls.includes('playDraw'));
       assert.equal(doc.getElementById('modalWinnerTitle').textContent, 'Stalemate!');
       assert.equal(doc.getElementById('drawsScoreNumber').textContent, '1');
+    });
+
+    it('should delay opening the victory modal when gameOverModalDelay is set, allowing player to see final move and line', async () => {
+      const { doc } = createMockDomFixture();
+      const app = bootstrapApp({
+        document: doc,
+        domOptions: { gameOverModalDelay: 60 }
+      });
+
+      const modal = doc.getElementById('winnerModal');
+      assert.equal(modal.style.display, 'none');
+
+      // Emit game over
+      app.eventBus.emit(EVENT_TYPES.GAME_OVER, {
+        winner: 'p2',
+        winningLine: [3, 4, 5],
+        mode: 'classic',
+        state: { winningLine: [3, 4, 5] }
+      });
+
+      // Initially during the pause, the modal must NOT be open yet
+      assert.equal(modal.style.display, 'none', 'Modal must wait during pause to allow viewing the winning pawn');
+
+      // Wait for delay to expire
+      await new Promise((resolve) => setTimeout(resolve, 80));
+
+      assert.equal(modal.style.display, 'flex', 'Modal must open after the pause completes');
+      assert.equal(doc.getElementById('modalWinnerTitle').textContent, 'AI Bot Wins!');
     });
   });
 
