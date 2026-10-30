@@ -1,6 +1,6 @@
 # ⏳ Chrono-Tic-Tac-Toe — Modern Tactical Indie Web Game
 
-[![Tests: 283 Passing](https://img.shields.io/badge/tests-283%20passing-brightgreen?style=for-the-badge&logo=node.js)](tests/)
+[![Tests: 284 Passing](https://img.shields.io/badge/tests-284%20passing-brightgreen?style=for-the-badge&logo=node.js)](tests/)
 [![Architecture: Decoupled 5-Layer](https://img.shields.io/badge/architecture-5--layer%20clean-blue?style=for-the-badge)](src/)
 [![Accessibility: WCAG 2.1 AA](https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-purple?style=for-the-badge)](src/ui/a11yManager.js)
 [![Web Audio: 100% Procedural](https://img.shields.io/badge/audio-Web%20Audio%20API-orange?style=for-the-badge)](src/audio/soundEngine.js)
@@ -13,27 +13,43 @@ Chrono-Tic-Tac-Toe tackles the fatal flaw of traditional Tic-Tac-Toe—repetitiv
 
 ---
 
+## 📸 Game Gallery & Interface Screenshots
+
+| 🎮 Battle Setup & Mode Selection | ⚡ Tactical Overdrive Gameplay |
+| :---: | :---: |
+| ![Battle Setup Screen](docs/screenshots/setup-menu.png) | ![Tactical Overdrive Arena](docs/screenshots/gameplay-tactical.png) |
+| *Custom game modes, AI difficulties, themes, and battle marks* | *Active match with Shatter, Phase Swap, and Blitz countdown* |
+
+| 🏆 Victory Celebration & Laser Line | 📱 Responsive Mobile Layout |
+| :---: | :---: |
+| ![Victory Celebration](docs/screenshots/victory-screen.png) | ![Mobile Responsive Layout](docs/screenshots/mobile-view.png) |
+| *Victory pause, winning pawn pulse, laser line, and stats modal* | *Fluid responsive scaling for mobile touch devices* |
+
+---
+
 ## 📑 Table of Contents
 
 1. [Overview & Quick Start](#-overview--quick-start)
-2. [5-Layer Decoupled Architecture](#-5-layer-decoupled-architecture)
-3. [Innovative Gameplay Mechanics](#-innovative-gameplay-mechanics)
+2. [Game Gallery & Screenshots](#-game-gallery--interface-screenshots)
+3. [5-Layer Decoupled Architecture](#-5-layer-decoupled-architecture)
+4. [Innovative Gameplay Mechanics](#-innovative-gameplay-mechanics)
    - [Chrono Ghost Mode (FIFO Decay)](#1-chrono-ghost-mode-fifo-mark-decay)
    - [Tactical Overdrive Mode](#2-tactical-overdrive-mode)
-   - [Blitz Speed Timer](#3-blitz-speed-timer)
-4. [AI Game Theory & Mathematical Optimality](#-ai-game-theory--mathematical-optimality)
+   - [Pawn Destroy & Swap Visual Effects](#3-pawn-destroy--swap-visual-effects)
+   - [Blitz Speed Timer & Victory Pause](#4-blitz-speed-timer--victory-pause)
+5. [AI Game Theory & Mathematical Optimality](#-ai-game-theory--mathematical-optimality)
    - [Classic Minimax with Alpha-Beta Pruning](#1-classic-minimax-depth-9-alpha-beta-pruning)
    - [Chrono Ghost Transposition Minimax with Cycle Detection](#2-chrono-ghost-transposition-minimax--cycle-prevention)
    - [Tactical Heuristic & Exploratory Tiers](#3-tactical-heuristic--exploratory-tiers)
-5. [Procedural Web Audio Graph](#-procedural-web-audio-graph)
-6. [Indie Visual Design & UI System](#-indie-visual-design--ui-system)
+6. [Procedural Web Audio Graph](#-procedural-web-audio-graph)
+7. [Indie Visual Design & UI System](#-indie-visual-design--ui-system)
    - [Handcrafted Color Schemes](#handcrafted-color-palettes)
    - [Desktop Cockpit Console](#responsive-desktop-cockpit-console)
    - [Canvas Particle Physics Engine](#canvas-particle-physics-confetti)
    - [Dynamic SVG Laser Strike Line](#dynamic-svg-laser-strike-line)
-7. [Accessibility & WCAG 2.1 AA Compliance](#-accessibility--wcag-21-aa-compliance)
-8. [Automated Test Suite & Verification Guide](#-automated-test-suite--verification-guide)
-9. [Project Layout & Engineering Invariants](#-project-layout--engineering-invariants)
+8. [Accessibility & WCAG 2.1 AA Compliance](#-accessibility--wcag-21-aa-compliance)
+9. [Automated Test Suite & Verification Guide](#-automated-test-suite--verification-guide)
+10. [Project Layout & Engineering Invariants](#-project-layout--engineering-invariants)
 
 ---
 
@@ -45,8 +61,8 @@ Chrono-Tic-Tac-Toe is engineered as a standalone static web application that run
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/AliGohar2151/PRODIGY_WD_03.git
-cd PRODIGY_WD_03
+git clone https://github.com/AliGohar2151/tic-tac-toe-arcade-deluxe.git
+cd tic-tac-toe-arcade-deluxe
 
 # 2. Open directly in your default browser
 # Windows PowerShell:
@@ -170,11 +186,17 @@ Equips each player with two powerful tactical charges per match:
   - A Phase Swap that inadvertently completes an opponent's 3-in-a-row combination immediately awards the win to the opponent (suicide/blunder check).
   - Ability charges are consumed on execution and cannot be double-spent.
 
-### 3. Blitz Speed Timer
+### 3. Pawn Destroy & Swap Visual Effects
+- **💥 High-Impact Shatter Animation**: When Shatter is triggered, the targeted tile undergoes a violent vibration shockwave (`cellShatterImpact`), and the destroyed pawn shatters into expanding glowing shards (`pawnExplodeIntoShards`) with a crimson halo before vaporizing into debris.
+- **👻 Ghost FIFO Evaporation**: Expiring oldest pawns rise upward in a misty spectral ether (`ghostMarkEvaporate`) before dissipating.
+- **🔄 Quantum Phase Swap Arc Flight**: Swapped pawns calculate real-time geometric screen vectors and fly along opposite quantum phase arcs (`phaseSwapArcA` and `phaseSwapArcB`) with glowing cyan plasma (`var(--accent-swap)`), 3D rotations, and elastic landing bounces.
+
+### 4. Blitz Speed Timer & Victory Pause
 - **Turn Countdown**: Configurable turn durations (3.0s fast, 5.0s standard, 10.0s casual).
 - **Monotonic Precision**: Measured against `performance.now()` delta-times to eliminate browser background tab throttling drift.
 - **Auditory & Visual Urgency**: Fluid SVG progress bar fills and changes color; urgent double-beep audio warning triggers at $\le 1.5$ seconds remaining.
 - **Deterministic Auto-Move**: When the countdown expires, the game controller automatically dispatches a deterministic random move on behalf of the active player to maintain high-tempo gameplay.
+- **⏸️ 1.4-Second Post-Game Victory Pause**: When the computer (or player) places the winning move, the game pauses for 1.4 seconds before opening the victory modal. This ensures players can clearly see the final move, watch the winning combination bounce with a golden halo, and observe the laser strike line connecting the 3 pawns.
 
 ---
 

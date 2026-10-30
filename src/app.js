@@ -80,11 +80,55 @@ export function bootstrapApp(options = {}) {
 
 // Auto-bootstrap in browser environment
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      window.__app = bootstrapApp();
-    });
-  } else {
+  const initApp = () => {
     window.__app = bootstrapApp();
+
+    // Query parameter scenario hook for automated previews & documentation screenshots
+    const params = new URLSearchParams(window.location.search);
+    const scenario = params.get('scenario');
+    if (scenario && window.__app && window.__app.domController) {
+      setTimeout(() => {
+        const dc = window.__app.domController;
+        if (scenario === 'tactical') {
+          dc.selectedMode = 'tactical';
+          dc.selectedOpponent = 'human';
+          dc.p1Name = 'Alice';
+          dc.p2Name = 'Bob';
+          dc._startBattleFromSetup();
+          dc._handleCellClick(0); // P1
+          dc._handleCellClick(4); // P2
+          dc._handleCellClick(2); // P1
+          dc._handleCellClick(8); // P2
+          dc._handleCellClick(6); // P1
+        } else if (scenario === 'victory') {
+          dc.selectedMode = 'classic';
+          dc.selectedOpponent = 'ai';
+          dc._startBattleFromSetup();
+          dc._handleCellClick(0); // P1
+          dc._handleCellClick(3); // P2
+          dc._handleCellClick(1); // P1
+          dc._handleCellClick(5); // P2
+          dc._handleCellClick(2); // P1 (Wins!)
+          dc._openWinnerModal('Player 1 Wins!', 'Player 1 achieved 3-in-a-row!', '🏆');
+        } else if (scenario === 'ghost') {
+          dc.selectedMode = 'ghost';
+          dc.selectedOpponent = 'human';
+          dc._startBattleFromSetup();
+          dc._handleCellClick(0); // P1
+          dc._handleCellClick(1); // P2
+          dc._handleCellClick(2); // P1
+          dc._handleCellClick(3); // P2
+          dc._handleCellClick(4); // P1
+          dc._handleCellClick(5); // P2
+          // Next move causes index 0 to vanish
+        }
+      }, 100);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+  } else {
+    initApp();
   }
 }
