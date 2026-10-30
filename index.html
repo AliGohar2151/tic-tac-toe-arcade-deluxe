@@ -1,40 +1,47 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="neon">
+<html lang="en" data-theme="midnight">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe Arcade Deluxe 🎮</title>
+    <title>Chrono-Tic-Tac-Toe ⏳ Tactical Indie Edition</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <!-- Background Canvas for Celebratory Confetti -->
-    <canvas id="confettiCanvas"></canvas>
+    <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+    <!-- Screen Reader Live Announcers (Twin Polite + Assertive) -->
+    <div id="a11yLiveRegions" class="sr-only" aria-atomic="true">
+        <div id="a11yAnnouncerPoliteA" role="status" aria-live="polite"></div>
+        <div id="a11yAnnouncerPoliteB" role="status" aria-live="polite"></div>
+        <div id="a11yAnnouncerAssertive" role="alert" aria-live="assertive"></div>
+    </div>
 
     <div class="app-wrapper">
         <!-- Top Navigation / Controls Bar -->
         <header class="header">
             <div class="logo-area">
-                <span class="arcade-badge">ARCADE EDITION</span>
-                <h1>TIC-TAC-TOE <span>DELUXE</span></h1>
+                <span class="arcade-badge">TACTICAL CHRONO EDITION</span>
+                <h1>CHRONO <span>TIC-TAC-TOE</span></h1>
             </div>
             <div class="quick-controls">
                 <!-- Theme Switcher -->
                 <div class="theme-select-wrapper">
-                    <label for="themeSelect" class="visually-hidden">Theme</label>
+                    <label for="themeSelect" class="sr-only">Theme</label>
                     <select id="themeSelect" class="control-btn select-btn" title="Change Theme">
-                        <option value="neon">🌌 Neon Glow</option>
-                        <option value="pastel">🌸 Pastel Pop</option>
-                        <option value="dark">🕶️ Midnight</option>
+                        <option value="midnight">🌌 Midnight Slate</option>
+                        <option value="parchment">📜 Warm Parchment</option>
+                        <option value="obsidian">💎 Obsidian Luxe</option>
                     </select>
                 </div>
                 <!-- Sound Toggle -->
-                <button id="soundToggle" class="control-btn icon-btn" title="Toggle Sound">
+                <button id="soundToggle" class="control-btn icon-btn" title="Toggle Sound" aria-label="Toggle Sound" aria-pressed="false">
                     <span id="soundIcon">🔊</span>
                 </button>
                 <!-- Help / Rules Modal Button -->
-                <button id="helpButton" class="control-btn icon-btn" title="Game Rules & Modes">
+                <button id="helpButton" class="control-btn icon-btn" title="Game Rules & Modes" aria-label="Game Rules & Modes">
                     <span>❓</span>
                 </button>
             </div>
@@ -44,27 +51,27 @@
         <main class="main-card">
 
             <!-- SCREEN 1: Setup / Menu -->
-            <section id="setupScreen" class="screen setup-screen">
+            <section id="setupScreen" class="screen setup-screen" aria-label="Battle Setup">
                 <h2 class="section-title">Battle Setup</h2>
 
                 <!-- Game Mode Picker -->
                 <div class="setting-group">
-                    <label class="group-label">Choose Game Mode</label>
-                    <div class="mode-cards" id="modeSelector">
-                        <button type="button" class="mode-card active" data-mode="classic">
+                    <label class="group-label" id="modePickerLabel">Choose Game Mode</label>
+                    <div class="mode-cards" id="modeSelector" role="radiogroup" aria-labelledby="modePickerLabel">
+                        <button type="button" class="mode-card active" data-mode="classic" role="radio" aria-checked="true">
                             <span class="mode-icon">🎯</span>
                             <span class="mode-name">Classic</span>
-                            <span class="mode-desc">Standard 3x3 match</span>
+                            <span class="mode-desc">Standard 3x3 strategic match</span>
                         </button>
-                        <button type="button" class="mode-card" data-mode="ghost">
+                        <button type="button" class="mode-card" data-mode="ghost" role="radio" aria-checked="false">
                             <span class="mode-icon">👻</span>
-                            <span class="mode-name">Ghost Mode</span>
-                            <span class="mode-desc">Only 3 marks active! 4th makes 1st vanish</span>
+                            <span class="mode-name">Chrono Ghost</span>
+                            <span class="mode-desc">3-mark FIFO decay! Oldest piece vanishes</span>
                         </button>
-                        <button type="button" class="mode-card" data-mode="blitz">
-                            <span class="mode-icon">⏱️</span>
-                            <span class="mode-name">Blitz Speed</span>
-                            <span class="mode-desc">5-second quick turns</span>
+                        <button type="button" class="mode-card" data-mode="tactical" role="radio" aria-checked="false">
+                            <span class="mode-icon">⚡</span>
+                            <span class="mode-name">Tactical Overdrive</span>
+                            <span class="mode-desc">Shatter enemy pieces & Phase Swap adjacent marks</span>
                         </button>
                     </div>
                 </div>
@@ -84,15 +91,15 @@
                     <div class="difficulty-pills">
                         <label class="pill-radio">
                             <input type="radio" name="aiDifficulty" value="easy">
-                            <span class="pill-label">🟢 Chill</span>
+                            <span class="pill-label">🟢 Chill (Easy)</span>
                         </label>
                         <label class="pill-radio">
                             <input type="radio" name="aiDifficulty" value="medium" checked>
-                            <span class="pill-label">🟡 Smart</span>
+                            <span class="pill-label">🟡 Tactical (Medium)</span>
                         </label>
                         <label class="pill-radio">
                             <input type="radio" name="aiDifficulty" value="impossible">
-                            <span class="pill-label">🔴 Unbeatable</span>
+                            <span class="pill-label">🔴 Master (Hard Minimax)</span>
                         </label>
                     </div>
                 </div>
@@ -113,16 +120,29 @@
                         <button type="button" class="mark-pack-btn" data-p1="🐱" data-p2="🐶" data-p1name="Cat" data-p2name="Dog">
                             <span>🐱 vs 🐶</span>
                         </button>
-                        <button type="button" class="mark-pack-btn" data-p1="👑" data-p2="💀" data-p1name="King" data-p2name="Reaper">
-                            <span>👑 vs 💀</span>
-                        </button>
+                    </div>
+                </div>
+
+                <!-- Blitz Timer Toggle Group -->
+                <div class="setting-group blitz-setup-group">
+                    <label class="group-label">Blitz Speed Timer</label>
+                    <div class="blitz-toggle-row">
+                        <label class="toggle-checkbox-label">
+                            <input type="checkbox" id="blitzCheckbox">
+                            <span>Enable Blitz Turn Timer</span>
+                        </label>
+                        <select id="blitzDurationSelect" class="control-btn select-btn compact">
+                            <option value="3">3.0s Fast</option>
+                            <option value="5" selected>5.0s Standard</option>
+                            <option value="10">10.0s Casual</option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- Player Names -->
                 <div class="setting-group player-inputs">
                     <div class="input-field">
-                        <label for="player1Input">Player 1</label>
+                        <label for="player1Input">Player 1 Name</label>
                         <input type="text" id="player1Input" placeholder="Player 1" value="Player 1" maxlength="15">
                     </div>
                     <div class="input-field">
@@ -132,91 +152,151 @@
                 </div>
 
                 <!-- Start Action -->
-                <button id="startGameBtn" class="cta-btn primary-btn pulse-anim">
-                    START BATTLE ⚔️
+                <button id="startGameBtn" class="btn-tactile btn-primary-3d cta-btn">
+                    ENTER ARENA ⚔️
                 </button>
             </section>
 
-            <!-- SCREEN 2: Active Gameplay -->
-            <section id="gameScreen" class="screen game-screen" style="display: none;">
+            <!-- SCREEN 2: Active Gameplay (Cockpit Console Layout) -->
+            <section id="gameScreen" class="screen game-screen" style="display: none;" aria-label="Battle Arena">
                 
-                <!-- Game Info & Turn Header -->
-                <div class="turn-banner" id="turnBanner">
-                    <span class="turn-mark" id="currentTurnMark">✖️</span>
-                    <span class="turn-text" id="turnStatusText">Player 1's Turn</span>
-                </div>
+                <div class="game-cockpit-layout">
+                    <!-- LEFT CONSOLE PANEL: Player Profiles & Tactical Abilities -->
+                    <aside class="console-panel console-panel-left" aria-label="Player Profiles & Tactical Controls">
+                        <div class="panel-section-title">COMBATANTS</div>
 
-                <!-- Blitz Timer Bar (visible during Blitz mode) -->
-                <div class="blitz-timer-container" id="blitzTimerContainer" style="display: none;">
-                    <div class="blitz-timer-bar" id="blitzTimerBar"></div>
-                    <span class="blitz-timer-text" id="blitzTimerText">5.0s</span>
-                </div>
+                        <!-- Scoreboard / Player Cards -->
+                        <div class="scoreboard">
+                            <div class="score-card player-1" id="p1ScoreCard">
+                                <span class="score-mark" id="p1ScoreMark">✖️</span>
+                                <div class="score-info">
+                                    <span class="player-name" id="p1DisplayName">Player 1</span>
+                                    <span class="score-number" id="p1ScoreNumber">0</span>
+                                </div>
+                            </div>
 
-                <!-- Scoreboard -->
-                <div class="scoreboard">
-                    <div class="score-card player-1" id="p1ScoreCard">
-                        <span class="score-mark" id="p1ScoreMark">✖️</span>
-                        <div class="score-info">
-                            <span class="player-name" id="p1DisplayName">Player 1</span>
-                            <span class="score-number" id="p1ScoreNumber">0</span>
+                            <div class="score-card score-draws">
+                                <span class="draws-label">DRAWS</span>
+                                <span class="score-number" id="drawsScoreNumber">0</span>
+                            </div>
+
+                            <div class="score-card player-2" id="p2ScoreCard">
+                                <span class="score-mark" id="p2ScoreMark">⭕</span>
+                                <div class="score-info">
+                                    <span class="player-name" id="p2DisplayName">AI Bot</span>
+                                    <span class="score-number" id="p2ScoreNumber">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tactical Overdrive Controls -->
+                        <div class="tactical-abilities-container" id="tacticalAbilitiesContainer" style="display: none;">
+                            <div class="tactical-heading">TACTICAL CHARGES</div>
+                            <div class="ability-buttons">
+                                <button type="button" id="shatterBtn" class="btn-tactile ability-btn shatter-btn" title="Destroy an opponent piece">
+                                    <span class="ability-icon">💥</span>
+                                    <span class="ability-name">Shatter</span>
+                                    <span class="charge-badge" id="shatterCharges">[1]</span>
+                                </button>
+                                <button type="button" id="swapBtn" class="btn-tactile ability-btn swap-btn" title="Swap adjacent friendly and enemy piece">
+                                    <span class="ability-icon">🔄</span>
+                                    <span class="ability-name">Phase Swap</span>
+                                    <span class="charge-badge" id="swapCharges">[1]</span>
+                                </button>
+                                <button type="button" id="cancelAbilityBtn" class="btn-tactile cancel-ability-btn" title="Cancel targeting mode">
+                                    ✖ Cancel Target
+                                </button>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- CENTER STAGE: Grid Board, Turn Banner & Blitz Bar -->
+                    <div class="console-stage-center">
+                        <!-- Game Info & Turn Header -->
+                        <div class="turn-banner" id="turnBanner" aria-live="polite">
+                            <span class="turn-mark" id="currentTurnMark">✖️</span>
+                            <span class="turn-text" id="turnStatusText">Player 1's Turn</span>
+                        </div>
+
+                        <!-- Blitz Timer Bar (visible during Blitz mode) -->
+                        <div class="blitz-timer-container" id="blitzTimerContainer" style="display: none;" aria-label="Blitz Turn Countdown">
+                            <div class="blitz-timer-bar" id="blitzTimerBar"></div>
+                            <span class="blitz-timer-text" id="blitzTimerText">5.0s</span>
+                        </div>
+
+                        <!-- Ghost Mode Status -->
+                        <div id="ghostModeIndicator" class="ghost-indicator" style="display: none;">
+                            👻 Chrono Ghost: 3 marks max! Oldest mark flashes before vanishing.
+                        </div>
+
+                        <!-- Board Wrapper -->
+                        <div class="board-wrapper">
+                            <!-- Winning Strike Line Overlay -->
+                            <svg id="winningStrikeSvg" class="winning-strike-svg" aria-hidden="true">
+                                <line id="strikeLine" x1="0" y1="0" x2="0" y2="0" />
+                            </svg>
+
+                            <!-- 3x3 Grid Board with W3C APG Grid Hierarchy -->
+                            <div class="board" id="board" role="grid" aria-label="Tic-Tac-Toe Game Board" aria-rowcount="3" aria-colcount="3">
+                                <div role="row" style="display: contents;">
+                                    <button type="button" class="cell" data-index="0" role="gridcell" tabindex="0" aria-rowindex="1" aria-colindex="1" aria-label="Row 1, Column 1, empty"></button>
+                                    <button type="button" class="cell" data-index="1" role="gridcell" tabindex="-1" aria-rowindex="1" aria-colindex="2" aria-label="Row 1, Column 2, empty"></button>
+                                    <button type="button" class="cell" data-index="2" role="gridcell" tabindex="-1" aria-rowindex="1" aria-colindex="3" aria-label="Row 1, Column 3, empty"></button>
+                                </div>
+                                <div role="row" style="display: contents;">
+                                    <button type="button" class="cell" data-index="3" role="gridcell" tabindex="-1" aria-rowindex="2" aria-colindex="1" aria-label="Row 2, Column 1, empty"></button>
+                                    <button type="button" class="cell" data-index="4" role="gridcell" tabindex="-1" aria-rowindex="2" aria-colindex="2" aria-label="Row 2, Column 2, empty"></button>
+                                    <button type="button" class="cell" data-index="5" role="gridcell" tabindex="-1" aria-rowindex="2" aria-colindex="3" aria-label="Row 2, Column 3, empty"></button>
+                                </div>
+                                <div role="row" style="display: contents;">
+                                    <button type="button" class="cell" data-index="6" role="gridcell" tabindex="-1" aria-rowindex="3" aria-colindex="1" aria-label="Row 3, Column 1, empty"></button>
+                                    <button type="button" class="cell" data-index="7" role="gridcell" tabindex="-1" aria-rowindex="3" aria-colindex="2" aria-label="Row 3, Column 2, empty"></button>
+                                    <button type="button" class="cell" data-index="8" role="gridcell" tabindex="-1" aria-rowindex="3" aria-colindex="3" aria-label="Row 3, Column 3, empty"></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- In-Game Action Buttons -->
+                        <div class="game-actions">
+                            <button type="button" id="restartRoundBtn" class="btn-tactile btn-secondary-3d action-btn" title="Restart this round">
+                                🔄 Restart Round
+                            </button>
+                            <button type="button" id="backToSetupBtn" class="btn-tactile btn-secondary-3d action-btn secondary" title="Change settings or mode">
+                                ⚙️ Setup & Modes
+                            </button>
                         </div>
                     </div>
 
-                    <div class="score-card score-draws">
-                        <span class="draws-label">DRAWS</span>
-                        <span class="score-number" id="drawsScoreNumber">0</span>
-                    </div>
+                    <!-- RIGHT CONSOLE PANEL: Move History & Audio Controls -->
+                    <aside class="console-panel console-panel-right" aria-label="Match Chronology & Settings">
+                        <div class="panel-section-title">MOVE CHRONOLOGY</div>
+                        <ul class="move-history-list" id="moveHistoryList" aria-label="Move History Log">
+                            <li class="history-item empty">Awaiting combatants...</li>
+                        </ul>
 
-                    <div class="score-card player-2" id="p2ScoreCard">
-                        <span class="score-mark" id="p2ScoreMark">⭕</span>
-                        <div class="score-info">
-                            <span class="player-name" id="p2DisplayName">AI Bot</span>
-                            <span class="score-number" id="p2ScoreNumber">0</span>
+                        <div class="panel-section-title">AUDIO & SETTINGS</div>
+                        <div class="console-audio-box">
+                            <div class="slider-row">
+                                <label for="masterVolumeSlider" class="slider-label">Volume</label>
+                                <input type="range" id="masterVolumeSlider" class="volume-slider" min="0" max="1" step="0.05" value="0.70" aria-label="Master Volume">
+                            </div>
+                            <div class="theme-row">
+                                <label for="themeSelector" class="slider-label">Theme</label>
+                                <select id="themeSelector" class="control-btn select-btn compact" aria-label="Console Theme Selector">
+                                    <option value="midnight">Midnight Slate</option>
+                                    <option value="parchment">Warm Parchment</option>
+                                    <option value="obsidian">Obsidian Luxe</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Ghost Mode Hint/Status -->
-                <div id="ghostModeIndicator" class="ghost-indicator" style="display: none;">
-                    👻 Ghost Mode: Marks vanish after 3 moves! Oldest marks fade out.
-                </div>
-
-                <!-- Board Wrapper -->
-                <div class="board-wrapper">
-                    <!-- Winning Strike Line Overlay -->
-                    <svg id="winningStrikeSvg" class="winning-strike-svg" aria-hidden="true">
-                        <line id="strikeLine" x1="0" y1="0" x2="0" y2="0" />
-                    </svg>
-
-                    <!-- 3x3 Grid Board -->
-                    <div class="board" id="board">
-                        <button class="cell" data-index="0" aria-label="Cell 1"></button>
-                        <button class="cell" data-index="1" aria-label="Cell 2"></button>
-                        <button class="cell" data-index="2" aria-label="Cell 3"></button>
-                        <button class="cell" data-index="3" aria-label="Cell 4"></button>
-                        <button class="cell" data-index="4" aria-label="Cell 5"></button>
-                        <button class="cell" data-index="5" aria-label="Cell 6"></button>
-                        <button class="cell" data-index="6" aria-label="Cell 7"></button>
-                        <button class="cell" data-index="7" aria-label="Cell 8"></button>
-                        <button class="cell" data-index="8" aria-label="Cell 9"></button>
-                    </div>
-                </div>
-
-                <!-- In-Game Action Buttons -->
-                <div class="game-actions">
-                    <button id="restartRoundBtn" class="action-btn" title="Restart this round">
-                        🔄 Restart Round
-                    </button>
-                    <button id="backToSetupBtn" class="action-btn secondary" title="Change settings or mode">
-                        ⚙️ Setup & Modes
-                    </button>
+                    </aside>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- MODAL 1: Game Over / Victory Modal -->
-    <div id="winnerModal" class="modal-backdrop" style="display: none;">
+    <!-- MODAL 1: Game Over / Victory Modal (W3C APG Accessible Dialog) -->
+    <div id="winnerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalWinnerTitle" aria-describedby="modalWinnerMessage" style="display: none;">
         <div class="modal-card">
             <div class="modal-header">
                 <span class="modal-trophy" id="modalTrophy">🏆</span>
@@ -240,44 +320,50 @@
             </div>
 
             <div class="modal-buttons">
-                <button id="modalPlayAgainBtn" class="cta-btn primary-btn">Play Next Round ⚔️</button>
-                <button id="modalChangeModeBtn" class="cta-btn secondary-btn">Change Settings ⚙️</button>
+                <button type="button" id="modalPlayAgainBtn" class="btn-tactile btn-primary-3d cta-btn">Play Next Round ⚔️</button>
+                <button type="button" id="modalChangeModeBtn" class="btn-tactile btn-secondary-3d cta-btn">Change Settings ⚙️</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 2: Rules & Game Info Modal -->
-    <div id="rulesModal" class="modal-backdrop" style="display: none;">
+    <!-- MODAL 2: Rules & Game Info Modal (W3C APG Accessible Dialog) -->
+    <div id="rulesModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="rulesModalTitle" aria-describedby="rulesModalDesc" style="display: none;">
         <div class="modal-card rules-card">
             <div class="modal-header">
                 <span class="modal-trophy">📜</span>
-                <h3>Game Modes & Rules</h3>
-                <button id="closeRulesBtn" class="close-btn" aria-label="Close Rules">&times;</button>
+                <h3 id="rulesModalTitle">Game Modes & Rules</h3>
+                <button type="button" id="closeRulesBtn" class="close-btn" aria-label="Close Rules dialog">&times;</button>
             </div>
-            <div class="rules-body">
+            <div id="rulesModalDesc" class="rules-body">
                 <div class="rule-block">
                     <h4>🎯 Classic Mode</h4>
-                    <p>The timeless 3x3 game. Get 3 of your marks in a horizontal, vertical, or diagonal line to win.</p>
+                    <p>The timeless 3x3 strategic match. Form 3 of your marks in a line to claim victory.</p>
                 </div>
                 <div class="rule-block">
-                    <h4>👻 Ghost Mode (Infinity)</h4>
-                    <p>No more boring draws! Each player can only have <strong>3 marks</strong> on the board simultaneously. When you place a 4th mark, your <strong>1st (oldest) mark disappears</strong>! Watch for the pulsating warning mark before it vanishes.</p>
+                    <h4>👻 Chrono Ghost Mode</h4>
+                    <p>Strict FIFO decay! Each player may maintain at most <strong>3 marks</strong>. When placing a 4th mark, your oldest piece flashes critically and evaporates.</p>
                 </div>
                 <div class="rule-block">
-                    <h4>⏱️ Blitz Mode</h4>
-                    <p>You have only <strong>5 seconds per turn</strong>! Make a quick move before the timer expires or a random square is chosen for you.</p>
+                    <h4>⚡ Tactical Overdrive</h4>
+                    <p>Features 2 tactical power abilities per player:
+                    <br>• <strong>Shatter:</strong> Obliterate any opponent mark on the board.
+                    <br>• <strong>Phase Swap:</strong> Exchange a friendly mark with an adjacent enemy mark.</p>
                 </div>
                 <div class="rule-block">
-                    <h4>🔴 Unbeatable AI</h4>
-                    <p>Uses the mathematical <em>Minimax algorithm</em>. Can you outsmart it? (Hint: impossible in Classic mode, but maybe in Ghost or Blitz!)</p>
+                    <h4>⏱️ Blitz Speed Timer</h4>
+                    <p>High-stakes time pressure! Fast monotonic turns with auto-move placement upon countdown expiration.</p>
+                </div>
+                <div class="rule-block">
+                    <h4>⌨️ Full Keyboard Navigation</h4>
+                    <p>Navigate the 3x3 grid with <strong>Arrow Keys</strong>, <strong>Home</strong>, <strong>End</strong>, <strong>PageUp</strong>, <strong>PageDown</strong>, and place with <strong>Enter</strong> or <strong>Space</strong>.</p>
                 </div>
             </div>
-            <button id="gotItRulesBtn" class="cta-btn primary-btn">Got It, Let's Play!</button>
+            <button type="button" id="gotItRulesBtn" class="btn-tactile btn-primary-3d cta-btn">Got It, Let's Play!</button>
         </div>
     </div>
 
-    <!-- Game Scripts -->
-    <script src="script.js"></script>
+    <!-- Application Bootstrap -->
+    <script type="module" src="src/app.js"></script>
 </body>
 
 </html>
